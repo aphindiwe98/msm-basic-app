@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+  <head><meta charset="utf-8"><title>Register</title></head>
+  <body>
+    <h1>Register Child</h1>
+
+    <label>Parent Name <input id="parentName"></label><br>
+    <label>Parent Email <input id="parentEmail"></label><br>
+    <label>Child Name <input id="childName"></label><br>
+    <label>Child Age <input id="childAge" type="number"></label><br>
+
+    <button id="submitBtn">Submit</button>
+    <pre id="result"></pre>
+
+    <script>
+      document.getElementById("submitBtn").addEventListener("click", async () => {
+        const payload = {
+          parent_name: document.getElementById("parentName").value,
+          parent_email: document.getElementById("parentEmail").value,
+          child_name: document.getElementById("childName").value,
+          child_age: Number(document.getElementById("childAge").value)
+        };
+
+        const res = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+      });
+    </script>
+  </body>
+</html>

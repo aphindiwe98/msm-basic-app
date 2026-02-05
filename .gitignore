@@ -1,0 +1,17 @@
+# Node
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Playwright
+test-results/
+playwright-report/
+
+# OS
+.DS_Store
+
+# SQLite database
+*.db
