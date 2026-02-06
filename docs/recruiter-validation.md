@@ -31,11 +31,11 @@ without conducting an interview.
    Technique:
    - Boundary Value Analysis (ages 5–12)
 
-5) CI Proof  
-   Evidence: GitHub Actions runs (visible after repository is pushed)
+5) CI Proof (GitHub Actions)
+   Evidence: GitHub → Actions tab
    Coverage:
-   - Automated UI tests
-   - Automated API tests
+   - UI Tests (Playwright)
+   - API Tests (pytest)
 
 ## Scope Declaration
 

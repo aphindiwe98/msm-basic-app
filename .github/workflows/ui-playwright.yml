@@ -1,0 +1,32 @@
+name: UI Tests (Playwright)
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  ui:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install app dependencies
+        working-directory: app
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Start server
+        working-directory: app
+        run: node src/server.js &
+      
+      - name: Run UI tests
+        run: npx playwright test --workers=1
