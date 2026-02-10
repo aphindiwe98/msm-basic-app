@@ -17,3 +17,17 @@ Because this is a basic demo app intended for QA evidence, we prioritize stabili
 ## Next planned action
 Evaluate alternative SQLite libraries (`better-sqlite3` or `sqlite` wrapper) to reduce dependency risk,
 or upgrade sqlite3 in a controlled branch with CI verification.
+## Dependency Vulnerability Note
+
+`npm audit` reports high-severity vulnerabilities originating from
+transitive dependencies (e.g. `tar`, `node-gyp`) used by `sqlite3`.
+
+### Decision
+- `npm audit fix --force` was **not applied**
+- Reason: introduces breaking changes to `sqlite3`
+- Risk accepted for development/demo scope
+
+### Mitigation
+- Application is not exposed to untrusted file uploads
+- No tar extraction or filesystem writes from user input
+- Dependencies pinned via package-lock.json
