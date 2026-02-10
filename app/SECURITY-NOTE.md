@@ -1,27 +1,19 @@
-# Security Note (npm audit)
+# Security Note (App dependencies)
 
-As of this commit, `npm audit` reports high-severity vulnerabilities originating from transitive dependencies used by `sqlite3` build tooling (`node-gyp` -> `make-fetch-happen` -> `cacache` -> `tar`).
+## Summary
+`npm audit` reports high severity vulnerabilities in transitive dependencies
+pulled in by `sqlite3` (via `node-gyp` / `tar`).
 
-- Non-breaking fixes were applied using: `npm audit fix`
-- Remaining issues require: `npm audit fix --force`
-- npm indicates `--force` would install `sqlite3@5.0.2` (breaking change)
+## Why not `npm audit fix --force`?
+`npm audit fix --force` proposes a breaking change (major version change to sqlite3).
+Because this is a basic demo app intended for QA evidence, we prioritize stability and reproducibility.
 
-Decision:
-- This project is a local learning/demo repository (not production deployed).
-- We proceed without `--force` to avoid destabilizing Windows builds.
-- Mitigation: pin Node LTS, track sqlite3 updates, and revisit if deploying.
+## Mitigation
+- No untrusted user file extraction is performed by this app.
+- Inputs are validated on server routes (/api/register, /api/checkout).
+- SQLite is used locally; no production deployment claim is made.
+- Dependencies are pinned by package-lock.json to ensure reproducible installs in CI.
 
-Command output is available via `npm audit`.
-
-## npm audit (transitive dependency note)
-
-`npm audit` reports high-severity vulnerabilities in `tar` pulled transitively via:
-sqlite3 → node-gyp → make-fetch-happen → cacache → tar.
-
-Automated remediation requires `npm audit fix --force` which downgrades sqlite3 to `5.0.2`
-and may introduce breaking changes (native module/toolchain behavior).
-
-This repository is a portfolio/demo app. Dependencies are intentionally kept stable to avoid
-breaking builds. Remediation is planned via controlled version bumps verified in CI, or by
-replacing sqlite3 with an alternative (e.g., better-sqlite3) if required.
-
+## Next planned action
+Evaluate alternative SQLite libraries (`better-sqlite3` or `sqlite` wrapper) to reduce dependency risk,
+or upgrade sqlite3 in a controlled branch with CI verification.
