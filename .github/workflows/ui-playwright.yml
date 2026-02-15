@@ -1,3 +1,4 @@
+
 name: UI Tests (App Only)
 
 on:
@@ -7,9 +8,6 @@ on:
 jobs:
   ui:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: app
 
     steps:
       - uses: actions/checkout@v4
@@ -18,14 +16,30 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies
+      - name: Install dependencies (app only)
+        working-directory: app
         run: npm ci
 
       - name: Install Playwright browsers
+        working-directory: app
         run: npx playwright install --with-deps
 
+      # ✅ DEBUG: prove the tests exist in CI
+      - name: Debug (prove tests exist)
+        working-directory: app
+        run: |
+          pwd
+          ls -la
+          ls -la tests
+          ls -la tests/ui
+          node -e "console.log('Config exists:', require('fs').existsSync('./playwright.config.js'))"
+          npx playwright test --list
+
       - name: Start server
+        working-directory: app
         run: node src/server.js &
 
+      # ✅ IMPORTANT: explicitly use the config inside app
       - name: Run Playwright UI tests
-        run: npx playwright test --workers=1
+        working-directory: app
+        run: npx playwright test --config=playwright.config.js --workers=1
