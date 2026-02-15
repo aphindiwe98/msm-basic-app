@@ -7,7 +7,6 @@ on:
 jobs:
   ui:
     runs-on: ubuntu-latest
-
     defaults:
       run:
         working-directory: app
@@ -18,8 +17,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
-          cache-dependency-path: app/package-lock.json
 
       - name: Install dependencies (app only)
         run: npm ci
@@ -29,14 +26,6 @@ jobs:
 
       - name: Start server
         run: node src/server.js &
-
-      - name: Wait for API health (server ready)
-        run: |
-          for i in {1..30}; do
-            curl -s http://localhost:3000/api/health && exit 0
-            sleep 1
-          done
-          echo "Server did not become ready in time" && exit 1
 
       - name: Run Playwright UI tests
         run: npx playwright test --workers=1
