@@ -1,4 +1,3 @@
-
 name: UI Tests (App Only)
 
 on:
@@ -9,37 +8,50 @@ jobs:
   ui:
     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
+    defaults:
+      run:
+        working-directory: app
 
-      - uses: actions/setup-node@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install dependencies (app only)
-        working-directory: app
+      - name: Install dependencies (app)
         run: npm ci
 
+      - name: Verify Playwright is installed (app)
+        run: |
+          node -v
+          npm -v
+          npm ls @playwright/test || true
+          npx playwright --version
+
       - name: Install Playwright browsers
-        working-directory: app
         run: npx playwright install --with-deps
 
-      # ✅ DEBUG: prove the tests exist in CI
-      - name: Debug (prove tests exist)
-        working-directory: app
+      # ---- DEBUG (keeps diagnosis easy) ----
+      - name: Debug - show working directory
+        run: pwd
+
+      - name: Debug - list app files
+        run: ls -la
+
+      - name: Debug - list tests folders
         run: |
-          pwd
-          ls -la
-          ls -la tests
-          ls -la tests/ui
-          node -e "console.log('Config exists:', require('fs').existsSync('./playwright.config.js'))"
-          npx playwright test --list
+          ls -la tests || true
+          ls -la tests/ui || true
 
-      - name: Start server
-        working-directory: app
-        run: node src/server.js &
+      - name: Debug - show Playwright config
+        run: cat playwright.config.js || true
 
-      # ✅ IMPORTANT: explicitly use the config inside app
+      - name: Debug - list tests Playwright sees
+        run: npx playwright test --config=playwright.config.js --list
+      # -------------------------------------
+
       - name: Run Playwright UI tests
-        working-directory: app
         run: npx playwright test --config=playwright.config.js --workers=1

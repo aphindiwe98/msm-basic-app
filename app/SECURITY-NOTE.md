@@ -1,33 +1,57 @@
-# Security Note (App dependencies)
+# Security Note (App Dependencies)
 
 ## Summary
-`npm audit` reports high severity vulnerabilities in transitive dependencies
-pulled in by `sqlite3` (via `node-gyp` / `tar`).
-
-## Why not `npm audit fix --force`?
-`npm audit fix --force` proposes a breaking change (major version change to sqlite3).
-Because this is a basic demo app intended for QA evidence, we prioritize stability and reproducibility.
-
-## Mitigation
-- No untrusted user file extraction is performed by this app.
-- Inputs are validated on server routes (/api/register, /api/checkout).
-- SQLite is used locally; no production deployment claim is made.
-- Dependencies are pinned by package-lock.json to ensure reproducible installs in CI.
-
-## Next planned action
-Evaluate alternative SQLite libraries (`better-sqlite3` or `sqlite` wrapper) to reduce dependency risk,
-or upgrade sqlite3 in a controlled branch with CI verification.
-## Dependency Vulnerability Note
 
 `npm audit` reports high-severity vulnerabilities originating from
-transitive dependencies (e.g. `tar`, `node-gyp`) used by `sqlite3`.
+transitive dependencies (e.g., `tar`, `node-gyp`) pulled in by `sqlite3`.
 
-### Decision
-- `npm audit fix --force` was **not applied**
-- Reason: introduces breaking changes to `sqlite3`
-- Risk accepted for development/demo scope
+These vulnerabilities are related to development toolchains and packaging
+utilities, not to application runtime logic.
 
-### Mitigation
-- Application is not exposed to untrusted file uploads
-- No tar extraction or filesystem writes from user input
-- Dependencies pinned via package-lock.json
+---
+
+## Why `npm audit fix --force` Was Not Applied
+
+Running:
+
+    npm audit fix --force
+
+introduces a breaking major-version change to `sqlite3`, which may:
+
+- Break application behavior
+- Break CI reproducibility
+- Introduce instability in this demo project
+
+Because this repository is a QA automation portfolio project,
+stability and deterministic CI behavior are prioritized.
+
+---
+
+## Risk Assessment
+
+- The application does not process untrusted file uploads.
+- No `tar` extraction is performed at runtime.
+- No filesystem writes are performed from user input.
+- SQLite is used locally only.
+- No production deployment claim is made.
+
+---
+
+## Mitigation
+
+- Dependencies are pinned via `package-lock.json`
+- CI installs via `npm ci` for reproducibility
+- Inputs are validated on:
+  - `/api/register`
+  - `/api/checkout`
+
+---
+
+## Future Consideration
+
+Evaluate:
+
+- `better-sqlite3`
+- `sqlite` wrapper
+
+in a controlled branch with CI validation to reduce dependency surface area.

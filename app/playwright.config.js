@@ -3,14 +3,14 @@
 module.exports = defineConfig({
   testDir: "./tests",
 
-  // Give slow Windows machines enough time
+  // timeouts (good for slow machines)
   timeout: 120000,
   expect: { timeout: 15000 },
 
-  // Ensure Playwright always has a server to talk to
+  // Let Playwright start/stop your server
   webServer: {
     command: "npm run dev",
-    cwd: "./app",              // IMPORTANT: your server is inside /app
+    cwd: ".",                 // ✅ FIX: you are already inside /app
     port: 3000,
     reuseExistingServer: true,
     timeout: 120000,
@@ -18,11 +18,13 @@ module.exports = defineConfig({
 
   use: {
     baseURL: "http://localhost:3000",
-    headless: false,
+
+    // ✅ IMPORTANT: make CI headless, keep local headed if you want
+    headless: !!process.env.CI,
+
     actionTimeout: 30000,
     navigationTimeout: 60000,
 
-    // Debug artifacts
     screenshot: "only-on-failure",
     trace: "on-first-retry",
 
