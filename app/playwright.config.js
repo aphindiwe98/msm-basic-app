@@ -10,9 +10,9 @@ module.exports = defineConfig({
   // Let Playwright start/stop your server
   webServer: {
     command: "npm run dev",
-    cwd: ".",                 // ✅ FIX: you are already inside /app
+    
     port: 3000,
-    reuseExistingServer: true,
+    reuseExistingServer: false,
     timeout: 120000,
   },
 
